@@ -7,3 +7,4 @@ venv/
 bronze_pipeline.py
 silver_pipeline.py
 gold_pipeline.py
+System Overview.drawio
