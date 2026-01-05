@@ -1,7 +1,13 @@
--------------CREATE TABLES------------------------
-drop table if exists public.house_price cascade;
+--======CREATE SCHEMAS==============
+create schema if not exists bronze;
+create schema if not exists silver;
+create schema if not exists gold;
 
-create table public.house_price (
+--======CREATE TABLES==============
+--------create bronze layer tables--------
+drop table if exists bronze.house_price cascade;
+
+create table bronze.house_price (
     id SERIAL primary key,
     transaction_unique_identifier varchar(50) not null,
     price int not null,
@@ -17,11 +23,42 @@ create table public.house_price (
     lsmdf timestamp default current_timestamp
 );
 
-CREATE INDEX idx_postcode ON house_price (postcode);
+CREATE INDEX idx_bronze_postcode ON bronze.house_price (postcode);
 
-drop table if exists public.house_adjusted_price cascade;
+drop table if exists bronze.cpi cascade;
 
-create table public.house_adjusted_price (
+create table bronze.cpi (
+    id SERIAL primary key,
+    cpi_month date not null,
+	value numeric(10,2) not null,
+    lsmdf timestamp default current_timestamp
+);
+
+--------create silver layer tables--------
+drop table if exists silver.house_price cascade;
+
+create table silver.house_price (
+    id SERIAL primary key,
+    transaction_unique_identifier varchar(50) not null,
+    price int not null,
+    date_of_transfer date not null,
+    postcode varchar(10) null,
+    property_type varchar(50) null,
+    new_build varchar(50) null,
+    tenure varchar(50) null,
+    street varchar(255) null,
+    district varchar(255) null,
+    town_city varchar(255) null,
+    county varchar(255) null,
+    lsmdf timestamp default current_timestamp
+);
+
+CREATE INDEX idx_silver_postcode ON silver.house_price (postcode);
+
+--------create gold layer tables--------
+drop table if exists gold.house_price cascade;
+
+create table gold.house_price (
 	id bigint NULL,
 	price int NULL,
 	adjusted_price numeric(22,2) NULL,
@@ -37,44 +74,9 @@ create table public.house_adjusted_price (
 	county varchar(255) NULL,
 	lsmdf timestamp default current_timestamp
 );
+CREATE INDEX idx_gold_postcode ON gold.house_price (postcode);
 
-drop table if exists public.cpi cascade;
-
-create table public.cpi (
-    id SERIAL primary key,
-    cpi_month date not null,
-	value numeric(10,2) not null,
-    lsmdf timestamp default current_timestamp
-);
-
-drop table if exists public.predicted_monthly_price  cascade;
-
-create table public.predicted_monthly_price (
-    month_of_transfer date not null,
-    category varchar(255) not null,
-    subcategory varchar(255) not null,
-    label varchar(255) not null,
-    price numeric(22,2) not null,
-    model varchar(255) null,
-    lsmdf timestamp default current_timestamp
-);
-
-drop table if exists public.calculated_metric  cascade;
-
-create table public.calculated_metric (
-    category varchar(255) not null,
-    subcategory varchar(255) not null,
-    model varchar(255) not null,
-    mape numeric(10,2) not null,
-    mae numeric(22,2) not null,
-    rmse numeric(22,2) not null,
-    r2 numeric(22,2) not null,
-    mbe numeric(22,2) not null,
-    da numeric(10,2) null,
-    lsmdf timestamp default current_timestamp
-);
-
--------------INSERT CPI data------------------------
+--======INSERT CPI data==============
 truncate table public.cpi;
 insert into public.cpi (cpi_month, value) values ('2019/01/01', 106.4);
 insert into public.cpi (cpi_month, value) values ('2019/02/01', 106.8);
@@ -154,7 +156,3 @@ insert into public.cpi (cpi_month, value) values ('2025/03/01', 136.1);
 insert into public.cpi (cpi_month, value) values ('2025/04/01', 137.7);
 insert into public.cpi (cpi_month, value) values ('2025/05/01', 138);
 insert into public.cpi (cpi_month, value) values ('2025/06/01', 138.4);
-
-
-
-

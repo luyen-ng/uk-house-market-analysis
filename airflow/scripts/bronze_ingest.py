@@ -49,7 +49,7 @@ def run_bronze_ingest():
         df.to_sql(
             name='house_price',
             con=engine,
-            schema='public',
+            schema='bronze',
             if_exists='append',
             index=False,
             method='multi',
