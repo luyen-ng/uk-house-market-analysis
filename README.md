@@ -1,6 +1,6 @@
 # UK House Market Analysis 
 ## Project Overview
-This project builds an end-to-end data system that collects, stores, analyses, and visualises English and Welsh house price data by using Python, Apache Airflow, and PostgreSQL.
+This project builds a data workflow to ingest, transform, store, and analyse house price transaction data from England and Wales. The pipeline uses Python for data processing, Apache Airflow for workflow orchestration, and PostgreSQL for data storage.
 
 The system was **originally designed and deployed on AWS RDS (PostgreSQL)**, then **migrated to a local PostgreSQL database** for cost efficiency and reproducibility after AWS Free Tier expiration.
 
